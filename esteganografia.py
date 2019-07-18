@@ -58,7 +58,7 @@ def encode(img, file):
 	im = Image.open(img)
 	text = file2str(file)
 	writeLSB(im, dec2bin(text) + SEP, name)
-	print("Finished...\nSaved as: ", name, sep="")
+	print("Saved as: ", name, "\n\nFinished...", sep="")
 
 def decode(img):
 	print("Decoding...\n")
@@ -66,7 +66,3 @@ def decode(img):
 	print("Message:")
 	print(bin2dec(readLSB(im)))
 	print("\nFinished...")
-
-encode("fox.png", "file")
-print("\n\n")
-decode("encoded.png")
