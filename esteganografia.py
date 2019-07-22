@@ -66,3 +66,20 @@ def decode(img):
 	print("Message:")
 	print(bin2dec(readLSB(im)))
 	print("\nFinished...")
+
+def main():
+	print("1. Encode")
+	print("2. Decode")
+	answ = int(input("Elige una opción: "))
+	if(answ == 1):
+		img = input("Image: ")
+		txt = input("File")
+		encode(img, file)
+	elif(answ == 2):
+		img = input("Image: ")
+		decode(img)
+	else:
+		print("Error")
+
+if __name__ == "__main__":
+	main()
