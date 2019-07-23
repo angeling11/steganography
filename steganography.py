@@ -55,7 +55,7 @@ def readLSB(im):
 def encode(img, file):
 	print("Encoding...\n")
 	ext = img.split(".")
-	name = "encoded." + ext[-1]
+	name = "lsb." + ext[-1]
 	im = Image.open(img)
 	text = file2str(file)
 	writeLSB(im, dec2bin(text) + SEP, name)
@@ -81,7 +81,7 @@ def main():
  /##     ##\\ ##    ## ##.  .## ##      ## ## ##    ## ###    ## 
  ##       ## ##    ## '####### '###### ## ## ##    ## '######## 
                             ##                               ## 
-                           .##                 Steganigraphy    
+                           .##               SteganographyLSB    
                       #######'             github.com/JAngel-98 
     """)
 
