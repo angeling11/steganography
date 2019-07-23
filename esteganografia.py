@@ -1,4 +1,5 @@
 from PIL import Image
+from os import system
 
 SEP = "11111111"
 
@@ -58,24 +59,42 @@ def encode(img, file):
 	im = Image.open(img)
 	text = file2str(file)
 	writeLSB(im, dec2bin(text) + SEP, name)
-	print("Saved as: ", name, "\n\nFinished...", sep="")
+	print("   - Saved as:\n", name, "\n\nFinished...", sep="")
 
 def decode(img):
 	print("Decoding...\n")
 	im = Image.open(img)
-	print("Message:")
+	print("   - Message:")
 	print(bin2dec(readLSB(im)))
 	print("\nFinished...")
 
 def main():
+	system("clear")
+	print("""
+     .#.                               ##             .#######. 
+    /# #\\                              ##             ###    ## 
+    ## ##                              ## ##          ##        
+   /#   #\\   ##                        ##    ##       ##        
+   ##   ##   ## ####. .######. .#####. ## ## ## ####. ##  ##### 
+  /#######\\  ###  ### ##'  '## ##   ## ## ## ###  ### ##  ##### 
+  ##     ##  ##    ## ##    ## ####### ## ## ##    ## ##     ## 
+ /##     ##\\ ##    ## ##.  .## ##      ## ## ##    ## ###    ## 
+ ##       ## ##    ## '####### '###### ## ## ##    ## '######## 
+                            ##                               ## 
+                           .##                 Steganigraphy    
+                      #######'             github.com/JAngel-98 
+    """)
+
 	print("1. Encode")
 	print("2. Decode")
-	answ = int(input("Elige una opción: "))
+	answ = int(input(" => "))
 	if(answ == 1):
+		print("\n\n ============= Encode =============")
 		img = input("Image: ")
-		txt = input("File")
-		encode(img, file)
+		txt = input("File: ")
+		encode(img, txt)
 	elif(answ == 2):
+		print("\n\n ============= Decode =============")
 		img = input("Image: ")
 		decode(img)
 	else:
