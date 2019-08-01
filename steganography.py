@@ -71,7 +71,7 @@ def encode(img, text, verbose, save="lsb_enc"):
 	writeLSB(img, dec2bin(text) + SEP, name)
 	print("   - Saved as:\n", name, sep="")
 	if verbose:
-		print("\nFinished...")
+		print("\nFinishing...")
 
 def decode(img, verbose):
 	if verbose:
@@ -79,7 +79,7 @@ def decode(img, verbose):
 	print("   - Message:")
 	print(bin2dec(readLSB(img)))
 	if verbose:
-		print("\nFinished...")
+		print("\nFinishing...")
 
 def main():
 	system("clear")
@@ -102,9 +102,9 @@ def main():
 	LSB = parser.add_mutually_exclusive_group(required=True)
 	LSB.add_argument('-e', help="LSB to Image", action="store_true")
 	LSB.add_argument('-d', help="LSB from Image", action="store_true")
-	parser.add_argument("img", help="Image")
+	parser.add_argument("img", help="Image's Path (-d | -e required)")
 	groupDec = parser.add_mutually_exclusive_group()
-	groupDec.add_argument("-f", help="Path File")
+	groupDec.add_argument("-f", help="File's Path")
 	groupDec.add_argument("-s", help="String")
 	parser.add_argument("-sv", "--save", help="Save as...")
 	parser.add_argument("-v", "--verbose", help="output verbosity", action="store_true")
