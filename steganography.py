@@ -20,9 +20,13 @@ def bin2dec(strg):
 		s += chr(int(strg[i : i + 8], 2))
 	return s
 
-def writeLSB(im, text, name):
-	px = im.load()
-	width, height = im.size
+def writeLSB(img, text, name):
+	try:
+		im = Image.open(img)
+		px = im.load()
+		width, height = im.size
+	except:
+		exit("An unexpected error has occurred, unable to open the image...\nTry again")
 	c = 0
 	fin = False
 	for y in range(height):
@@ -39,12 +43,16 @@ def writeLSB(im, text, name):
 			if fin:
 				im.save(name)
 				return
-	exit("Try using a larger image...")
+	exit("Try using a larger image...\nTry again")
 
-def readLSB(im):
+def readLSB(img):
 	s = ""
-	px = im.load()
-	width, height = im.size
+	try:
+		im = Image.open(img)
+		px = im.load()
+		width, height = im.size
+	except:
+		exit("An unexpected error has occurred, unable to open the image...\nTry again")
 	for y in range(height):
 		for x in range(width):
 			for i in range(3):
@@ -52,7 +60,7 @@ def readLSB(im):
 				if len(s) % 8 == 0 and s[-8:] == SEP:
 					print
 					return s[:-8]
-	print("The message could be incomplete...")
+	print("The message may be incomplete...")
 	return s
 
 def encode(img, text, verbose, save="lsb_enc"):
@@ -60,37 +68,20 @@ def encode(img, text, verbose, save="lsb_enc"):
 		print("Encoding...\n")
 	ext = img.split(".")
 	name = save + "." + ext[-1]
-	im = Image.open(img)
-	writeLSB(im, dec2bin(text) + SEP, name)
+	writeLSB(img, dec2bin(text) + SEP, name)
 	print("   - Saved as:\n", name, sep="")
 	if verbose:
-		print("\n\nFinished...")
+		print("\nFinished...")
 
 def decode(img, verbose):
 	if verbose:
 		print("Decoding...\n")
-	im = Image.open(img)
 	print("   - Message:")
-	print(bin2dec(readLSB(im)))
+	print(bin2dec(readLSB(img)))
 	if verbose:
 		print("\nFinished...")
 
 def main():
-	parser = argparse.ArgumentParser(description="SteganographyLSB")
-	LSB = parser.add_mutually_exclusive_group(required=True)
-	LSB.add_argument('-e', help="LSB to Image", action="store_true")
-	LSB.add_argument('-d', help="LSB from Image", action="store_true")
-	parser.add_argument("img", help="Image")
-	groupDec = parser.add_mutually_exclusive_group()
-	groupDec.add_argument("-f", help="Path File")
-	groupDec.add_argument("-s", help="String")
-	parser.add_argument("--save", help="Save as...")
-	parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
-	args = parser.parse_args()
-
-	if args.f == None and args.s == None and args.e:
-		exit("Encoding LSB: '-f' or '-s' args required")
-
 	system("clear")
 	print("""
      .#.                               ##             .#######.
@@ -107,10 +98,32 @@ def main():
                       #######'             github.com/JAngel-98
     """)
 
+	parser = argparse.ArgumentParser(description="SteganographyLSB")
+	LSB = parser.add_mutually_exclusive_group(required=True)
+	LSB.add_argument('-e', help="LSB to Image", action="store_true")
+	LSB.add_argument('-d', help="LSB from Image", action="store_true")
+	parser.add_argument("img", help="Image")
+	groupDec = parser.add_mutually_exclusive_group()
+	groupDec.add_argument("-f", help="Path File")
+	groupDec.add_argument("-s", help="String")
+	parser.add_argument("-sv", "--save", help="Save as...")
+	parser.add_argument("-v", "--verbose", help="output verbosity", action="store_true")
+	args = parser.parse_args()
+
+	if args.f == None and args.s == None and args.e:
+		exit("Encoding LSB: '-f' or '-s' args required")
+
 	img = args.img
 	if args.e:
 		#============= Encoding =============
-		text = file2str(args.f) if args.f != None else args.s
+		if args.f != None:
+			try:
+				text = file2str(args.f)
+			except:
+				exit("An unexpected error has occurred, unable to read the file...")
+				print("Try again")
+		else:
+			text = args.s
 		if args.save != None:
 			encode(img, text, args.verbose, args.save)
 		else:
