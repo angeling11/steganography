@@ -1,5 +1,6 @@
 from PIL import Image
 from os import system
+import argparse
 
 SEP = "11111111"
 
@@ -38,6 +39,7 @@ def writeLSB(im, text, name):
 			if fin:
 				im.save(name)
 				return
+	exit("Try using a larger image...")
 
 def readLSB(im):
 	s = ""
@@ -50,55 +52,72 @@ def readLSB(im):
 				if len(s) % 8 == 0 and s[-8:] == SEP:
 					print
 					return s[:-8]
+	print("The message could be incomplete...")
 	return s
 
-def encode(img, file):
-	print("Encoding...\n")
+def encode(img, text, verbose, save="lsb_enc"):
+	if verbose:
+		print("Encoding...\n")
 	ext = img.split(".")
-	name = "lsb." + ext[-1]
+	name = save + "." + ext[-1]
 	im = Image.open(img)
-	text = file2str(file)
 	writeLSB(im, dec2bin(text) + SEP, name)
-	print("   - Saved as:\n", name, "\n\nFinished...", sep="")
+	print("   - Saved as:\n", name, sep="")
+	if verbose:
+		print("\n\nFinished...")
 
-def decode(img):
-	print("Decoding...\n")
+def decode(img, verbose):
+	if verbose:
+		print("Decoding...\n")
 	im = Image.open(img)
 	print("   - Message:")
 	print(bin2dec(readLSB(im)))
-	print("\nFinished...")
+	if verbose:
+		print("\nFinished...")
 
 def main():
+	parser = argparse.ArgumentParser(description="SteganographyLSB")
+	LSB = parser.add_mutually_exclusive_group(required=True)
+	LSB.add_argument('-e', help="LSB to Image", action="store_true")
+	LSB.add_argument('-d', help="LSB from Image", action="store_true")
+	parser.add_argument("img", help="Image")
+	groupDec = parser.add_mutually_exclusive_group()
+	groupDec.add_argument("-f", help="Path File")
+	groupDec.add_argument("-s", help="String")
+	parser.add_argument("--save", help="Save as...")
+	parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+	args = parser.parse_args()
+
+	if args.f == None and args.s == None and args.e:
+		exit("Encoding LSB: '-f' or '-s' args required")
+
 	system("clear")
 	print("""
-     .#.                               ##             .#######. 
-    /# #\\                              ##             ###    ## 
-    ## ##                              ## ##          ##        
-   /#   #\\   ##                        ##    ##       ##        
-   ##   ##   ## ####. .######. .#####. ## ## ## ####. ##  ##### 
-  /#######\\  ###  ### ##'  '## ##   ## ## ## ###  ### ##  ##### 
-  ##     ##  ##    ## ##    ## ####### ## ## ##    ## ##     ## 
- /##     ##\\ ##    ## ##.  .## ##      ## ## ##    ## ###    ## 
- ##       ## ##    ## '####### '###### ## ## ##    ## '######## 
-                            ##                               ## 
-                           .##               SteganographyLSB    
-                      #######'             github.com/JAngel-98 
+     .#.                               ##             .#######.
+    /# #\\                              ##             ###    ##
+    ## ##                              ## ##          ##
+   /#   #\\   ##                        ##    ##       ##
+   ##   ##   ## ####. .######. .#####. ## ## ## ####. ##  #####
+  /#######\\  ###  ### ##'  '## ##   ## ## ## ###  ### ##  #####
+  ##     ##  ##    ## ##    ## ####### ## ## ##    ## ##     ##
+ /##     ##\\ ##    ## ##.  .## ##      ## ## ##    ## ###    ##
+ ##       ## ##    ## '####### '###### ## ## ##    ## '########
+                            ##                               ##
+                           .##               SteganographyLSB
+                      #######'             github.com/JAngel-98
     """)
 
-	print("1. Encode")
-	print("2. Decode")
-	answ = int(input(" => "))
-	if(answ == 1):
-		print("\n\n ============= Encode =============")
-		img = input("Image: ")
-		txt = input("File: ")
-		encode(img, txt)
-	elif(answ == 2):
-		print("\n\n ============= Decode =============")
-		img = input("Image: ")
-		decode(img)
+	img = args.img
+	if args.e:
+		#============= Encoding =============
+		text = file2str(args.f) if args.f != None else args.s
+		if args.save != None:
+			encode(img, text, args.verbose, args.save)
+		else:
+			encode(img, text, args.verbose)
 	else:
-		print("Error")
+		#============= Decoding =============
+		decode(img, args.verbose)
 
 if __name__ == "__main__":
 	main()
